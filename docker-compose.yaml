@@ -1,0 +1,80 @@
+﻿version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tecos-postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tecos_db}
+      POSTGRES_USER: ${POSTGRES_USER:-tecos_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tecos_password}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tecos_user} -d ${POSTGRES_DB:-tecos_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tecos-network
+
+  api:
+    build:
+      context: .
+      dockerfile: TecOSAPI/Dockerfile
+    container_name: tecos-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-tecos_db};Username=${POSTGRES_USER:-tecos_user};Password=${POSTGRES_PASSWORD:-tecos_password}
+    networks:
+      - tecos-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tecos-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - tecos-network
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tecos-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - tecos-network
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  tecos-network:
+    driver: bridge
