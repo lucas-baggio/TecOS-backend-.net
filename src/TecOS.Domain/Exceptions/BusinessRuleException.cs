@@ -1,6 +1,6 @@
 ﻿namespace TecOS.Domain.Exceptions;
 
-public class BusinesRuleException :  DomainException
+public class BusinessRuleException :  DomainException
 {
-    public BusinesRuleException(string message) : base(message) {}
+    public BusinessRuleException(string message) : base(message) {}
 }
