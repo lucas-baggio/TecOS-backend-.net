@@ -51,4 +51,4 @@ The architecture is designed to be Cloud-ready, specifically targeting AWS infra
 * AWS App Runner / ECS: Container orchestration for the .NET API
 * GitHub Action: Automated CI/CD pipeline for TDD enforcement and automated deployment
 
-## Developed by Lucas Baggio - Software Engineer.
+## Developed by Lucas Baggio - Software Engineer. 
