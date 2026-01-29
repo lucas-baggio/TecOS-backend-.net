@@ -92,4 +92,8 @@
       <Folder Include="Controllers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+    </ItemGroup>
+
 </Project>
