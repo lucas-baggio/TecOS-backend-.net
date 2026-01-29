@@ -41,7 +41,7 @@ This project includes a complete monitoring environment to ensure system health 
    
 ## Access Points & Monitoring
 Once the containers are running, you can access the following services:
-* API Swagger UI: http://localhost:8080/swagger
+* API Swagger UI: http://localhost:5133/swagger/index.html
 * Prometheus: http://localhost:9090
 * Grafana: http://localhost:3000 (Default login: admin / admin)
 
