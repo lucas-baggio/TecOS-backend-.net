@@ -1,0 +1,23 @@
+﻿name: .NET Core CI
+
+on:
+  push:
+    branches: [ "main", "feature/*" ]
+  pull_request: 
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: action/checkout@v4
+      - name: Setup .NET
+        uses: action/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.0
+      
+      - name: Restore dependecies
+        run: dotnet restore
+        
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
